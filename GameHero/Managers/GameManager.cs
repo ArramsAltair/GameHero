@@ -14,7 +14,6 @@ namespace GameHero.Managers
         public GameManager() 
         {
             WeaponManager weaponManager = new WeaponManager();
-            
         }        
     }
 }

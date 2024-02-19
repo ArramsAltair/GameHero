@@ -27,6 +27,7 @@ namespace GameHero.Models
         public HeroModel() 
         {
             Weapons.Add(WeaponTypes.Hand, new HandWeapon());
+            Weapons.Add(WeaponTypes.Pistol, new PistolWeapon());
         }
         
         /// <summary>
@@ -41,6 +42,13 @@ namespace GameHero.Models
             }
             Weapons.Add(weaponTypes, WeaponManager.GetWeapon(weaponTypes)); //Ошибка null из GetWeapon
         }
+
+        public void ChangeWeapon(WeaponTypes weaponTypes) 
+        {
+            WeaponTypes = weaponTypes;
+        }
+
+
         public void Attack()
         {
             if (!Weapons.ContainsKey(WeaponTypes)) 
@@ -52,9 +60,9 @@ namespace GameHero.Models
         }
 
 
-        public WeaponTypes GetCurrectWeapon() 
+        public string GetCurrectWeaponName() 
         {
-            return WeaponTypes; 
+            return CurrectWeapon.Name; 
         }
     }
 }
