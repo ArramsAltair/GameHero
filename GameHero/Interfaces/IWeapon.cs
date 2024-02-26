@@ -12,6 +12,7 @@ namespace GameHero.Interfaces
         public int MagazineCapacity { get; }
         public double FireSpeed { get; }
         public double Damage { get; }
+        public string Image { get; }
         public abstract void Attack();
     }
 }

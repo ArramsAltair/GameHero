@@ -3,6 +3,7 @@ using GameHero.Interfaces;
 using GameHero.Managers;
 using GameHero.Weapons;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,9 +13,11 @@ namespace GameHero.Models
 {
     internal class HeroModel : IUnit
     {
-        public byte HP { get; set; }
+        public double HP { get; set; }
 
-        public Weapon CurrectWeapon { get; set; }
+        IWeapon currentWeapon { get; set; }
+
+        public int CountWeapons{ get; set; }
 
         Dictionary<WeaponTypes, IWeapon> Weapons = new Dictionary<WeaponTypes, IWeapon>();
         
@@ -28,6 +31,13 @@ namespace GameHero.Models
         {
             Weapons.Add(WeaponTypes.Hand, new HandWeapon());
             Weapons.Add(WeaponTypes.Pistol, new PistolWeapon());
+            
+
+        }
+
+        public Dictionary<WeaponTypes, IWeapon> GetWeaponsList() 
+        {
+            return Weapons;
         }
         
         /// <summary>
@@ -46,6 +56,12 @@ namespace GameHero.Models
         public void ChangeWeapon(WeaponTypes weaponTypes) 
         {
             WeaponTypes = weaponTypes;
+
+        }
+
+        public IWeapon GetCurrentWeapon() 
+        {
+            return currentWeapon = Weapons[WeaponTypes];
         }
 
 
@@ -56,13 +72,8 @@ namespace GameHero.Models
                 Console.WriteLine("Неизвестное оружие");
                 return;
             }
+            
             Weapons[WeaponTypes]?.Attack();
-        }
-
-
-        public string GetCurrectWeaponName() 
-        {
-            return CurrectWeapon.Name; 
         }
     }
 }

@@ -9,7 +9,7 @@ namespace GameHero.Interfaces
 {
     internal interface IUnit
     {
-        public byte HP { get; set; }
+        public double HP { get; set; }
         public abstract void Attack();
     }
 }

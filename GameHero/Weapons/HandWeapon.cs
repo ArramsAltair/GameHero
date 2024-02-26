@@ -13,17 +13,26 @@ namespace GameHero.Weapons
         {
 
         }
-        public override string Name => "Рука";
+        public override string Name { get; set; } = "Рука";
 
-        public override int MagazineCapacity => 1;
+        public override int MagazineCapacity { get; set; } = 1;
 
-        public override double FireSpeed => 1;
+        public override double FireSpeed { get; set; } = 1;
 
-        public override double Damage => .5f;
+        public override double Damage { get; set; } = .5f;
+
+        public override string Image { get; set; } =    "    _______  \n" +
+                                                        "---'   ____) \n" +
+                                                        "      (_____)\n" +
+                                                        "      (_____)\n" +
+                                                        "      (____) \n" +
+                                                        "---.__(___)  \n";
+
 
         public override void Attack()
         {
-            Console.WriteLine("Удар рукой");
+            Console.WriteLine("Удар "+ Name);
+            Console.WriteLine("Нанесен урон: " + Damage);
         }
 
         public IWeapon Create()
