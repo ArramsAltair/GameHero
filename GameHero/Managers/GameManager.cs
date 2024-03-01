@@ -2,8 +2,10 @@
 using GameHero.Interfaces;
 using GameHero.Models;
 using GameHero.Weapons;
+using GameHeroDAL.Connections;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -14,17 +16,14 @@ namespace GameHero.Managers
 {
     internal class GameManager
     {
+        private UserConnection userConnection;
         private HeroModel hero;
-        private Dictionary<WeaponTypes, IWeapon> Weapons;
+        private Dictionary<WeaponTypes, IWeapon> Weapons; 
 
         public GameManager()
         {
-            using (SqlConnection sqlConnection = new SqlConnection(""))
-            {
-                using SqlCommand cmd = sqlConnection.CreateCommand();
-                //cmd.ExecuteReader();d
-            }
-            
+            userConnection = new UserConnection();
+            Auth();
             WeaponManager weaponManager = new WeaponManager();
             hero = new HeroModel();
             Weapons = hero.GetWeaponsList(); 
@@ -38,6 +37,34 @@ namespace GameHero.Managers
             {
                 hero.HP = 100;
             }
+        }
+
+        private void Auth() 
+        {
+            string login = "";
+            string password = "";
+            Console.WriteLine("Добро пожаловать в игру Heroes");
+            while (true) 
+            {
+                while (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
+                {
+                    if (string.IsNullOrEmpty(login))
+                    {
+                        Console.WriteLine("Введите логин");
+                        login = Console.ReadLine();
+                    }
+                    if (string.IsNullOrEmpty(password))
+                    {
+                        Console.WriteLine("Введите пароль");
+                        password = Console.ReadLine();
+                    }
+                }
+                userConnection.GetAuth(login, password);
+            }
+            
+            
+
+            
         }
 
         private void Running() 
