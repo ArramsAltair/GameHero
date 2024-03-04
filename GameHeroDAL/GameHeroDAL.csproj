@@ -45,7 +45,7 @@
     <Compile Include="Inrefaces\IAuth.cs" />
     <Compile Include="Inrefaces\IConnection.cs" />
     <Compile Include="Inrefaces\IModels.cs" />
-    <Compile Include="Inrefaces\IUser.cs" />
+    <Compile Include="Inrefaces\IUserInfo.cs" />
     <Compile Include="Models\ModelBase.cs" />
     <Compile Include="Models\UserAuth.cs" />
     <Compile Include="Models\UserInfo.cs" />

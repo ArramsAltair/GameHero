@@ -43,10 +43,9 @@ namespace GameHero.Managers
         {
             string login = "";
             string password = "";
+            bool auth = false;
             Console.WriteLine("Добро пожаловать в игру Heroes");
-            while (true) 
-            {
-                while (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
+                while (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password) || !auth)
                 {
                     if (string.IsNullOrEmpty(login))
                     {
@@ -58,13 +57,14 @@ namespace GameHero.Managers
                         Console.WriteLine("Введите пароль");
                         password = Console.ReadLine();
                     }
+                auth = userConnection.IsAuth(login, password);
+                if (!auth)
+                    {
+                        Console.WriteLine("Неправильный логин или пароль");
+                        login = "";
+                        password = "";
+                    }
                 }
-                userConnection.GetAuth(login, password);
-            }
-            
-            
-
-            
         }
 
         private void Running() 

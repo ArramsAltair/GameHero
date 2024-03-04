@@ -3,39 +3,44 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GameHeroDAL.Connections
 {
     public class UserConnection
     {
-
-        
-        private void Connection()
+        SqlConnection sqlConnection;
+        public bool Connection()
         {
-            using (SqlConnection sqlConnection = new SqlConnection())
+            using (sqlConnection = new SqlConnection())
             {
                 sqlConnection.ConnectionString = "Data Source=ARRAMSNB\\MSSQLSERVER04; Integrated Security=SSPI; Initial Catalog=HeroesGame;";
-                sqlConnection.Open();
-                
-                //using SqlCommand cmd = sqlConnection.CreateCommand();
-                //cmd.ExecuteReader();
-
+                try{
+                    sqlConnection.Open();
+                }catch (Exception ex) 
+                {
+                    Console.WriteLine("Invalid connection!");
+                    return false;
+                }  
             }
-            Console.WriteLine("Соединение с базой успешно");
+            return true;
+            //Console.WriteLine("Соединение с базой успешно");
         }
 
         public void GetUsers() 
         {
-            using (SqlConnection sqlConnection = new SqlConnection())
+            if(Connection())
+            //using (sqlConnection = new SqlConnection())
             {
                 sqlConnection.ConnectionString = "Data Source=ARRAMSNB\\MSSQLSERVER04; Integrated Security=SSPI; Initial Catalog=HeroesGame;";
                 sqlConnection.Open();
 
                 using (SqlCommand cmd = sqlConnection.CreateCommand()) 
                 {
-                    //cmd.ExecuteReader();
+                    cmd.ExecuteReader();
                     cmd.CommandText = "SELECT * FROM Users";
                     
                     
@@ -49,13 +54,14 @@ namespace GameHeroDAL.Connections
                 }   
             }
         }
-        public void GetAuth(string username, string password) 
+
+        public bool IsAuth(string username, string password) 
         {
-            using (SqlConnection sqlConnection = new SqlConnection())
+            if (Connection())
+            //using (sqlConnection = new SqlConnection())
             {
                 sqlConnection.ConnectionString = "Data Source=ARRAMSNB\\MSSQLSERVER04; Integrated Security=SSPI; Initial Catalog=HeroesGame;";
                 sqlConnection.Open();
-
                 using (SqlCommand cmd = sqlConnection.CreateCommand())
                 {
                     cmd.CommandText = "SELECT * FROM Users WHERE Login = @username AND Password = @password";
@@ -63,12 +69,20 @@ namespace GameHeroDAL.Connections
                     cmd.Parameters.AddWithValue("password", password);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        while (reader.Read())
+                        if (reader.HasRows)
                         {
-                            Console.WriteLine(String.Format("{0} \t | {1} \t | {2} \t | {3}", reader[0], reader[1], reader[2], reader[3]));
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
                         }
                     }
                 }
+            }
+            else 
+            {
+                return false; 
             }
         }
     }
