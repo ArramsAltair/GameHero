@@ -4,14 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameHeroDAL.Inrefaces
+namespace GameHero
 {
-    internal interface IAuth
+    internal class Starter
     {
-        string Login { get; set; }
-
-        string Password { get; set; }
-
 
     }
 }

@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameHeroDAL.Inrefaces
+namespace GameHero.DAL.Inrefaces
 {
-    internal interface IUserInfo
+    public interface IUserInfo
     {
-        string UserId { get; set; }
+        int UserId { get; set; }
 
         string UserName { get; set; }
 
-        int Score { get; set; }
+        string UserRole { get; set; }
 
-        double HelthPoint { get; set; }
+        int HeroId { get; set; }
 
     }
 }

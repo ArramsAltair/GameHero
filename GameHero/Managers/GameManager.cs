@@ -2,7 +2,7 @@
 using GameHero.Interfaces;
 using GameHero.Models;
 using GameHero.Weapons;
-using GameHeroDAL.Connections;
+using GameHero.DAL;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -10,62 +10,50 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using GameHero.Logic.Managers;
+using GameHero.DAL.Inrefaces;
 
 namespace GameHero.Managers
 {
     internal class GameManager
     {
-        private UserConnection userConnection;
         private HeroModel hero;
-        private Dictionary<WeaponTypes, IWeapon> Weapons; 
+        private Dictionary<WeaponTypes, IWeapon> Weapons;
 
         public GameManager()
+        {            
+        }
+
+        public void Start()        
         {
-            userConnection = new UserConnection();
-            Auth();
-            WeaponManager weaponManager = new WeaponManager();
+            var userInfo = new UsersManager().UserAuth();
+            if (userInfo is null)
+            {
+                return;
+            }
+
+            Console.WriteLine("Добро пожаловать в игру ГЕРОИ, "+ userInfo.UserName + "!");
+
+            //WeaponManager weaponManager = new WeaponManager();
+
             hero = new HeroModel();
-            Weapons = hero.GetWeaponsList(); 
+            Weapons = hero.GetWeaponsList();
+
             NewGame();
             Running();
-            GameOver();            
+            GameOver();
         }
-        private void NewGame() 
+
+        /// <summary>
+        /// Метод приведение параметров героя к состоянию новой игры
+        /// </summary>
+        public void NewGame() 
         {
             if (hero != null) 
             {
                 hero.HP = 100;
             }
-        }
-
-        private void Auth() 
-        {
-            string login = "";
-            string password = "";
-            bool auth = false;
-            Console.WriteLine("Добро пожаловать в игру Heroes");
-                while (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password) || !auth)
-                {
-                    if (string.IsNullOrEmpty(login))
-                    {
-                        Console.WriteLine("Введите логин");
-                        login = Console.ReadLine();
-                    }
-                    if (string.IsNullOrEmpty(password))
-                    {
-                        Console.WriteLine("Введите пароль");
-                        password = Console.ReadLine();
-                    }
-                auth = userConnection.IsAuth(login, password);
-                if (!auth)
-                    {
-                        Console.WriteLine("Неправильный логин или пароль");
-                        login = "";
-                        password = "";
-                    }
-                }
-        }
+        }        
 
         private void Running() 
         {
@@ -148,6 +136,8 @@ namespace GameHero.Managers
         }
         private void GameOver() 
         {
+
+
             Console.WriteLine("До свидания, спасибо за игру!");
             Thread.Sleep(1000);
         }

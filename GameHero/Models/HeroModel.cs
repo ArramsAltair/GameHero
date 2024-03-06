@@ -19,6 +19,9 @@ namespace GameHero.Models
 
         public int CountWeapons{ get; set; }
 
+        public double Score { get; set; }
+
+
         Dictionary<WeaponTypes, IWeapon> Weapons = new Dictionary<WeaponTypes, IWeapon>();
         
         /// <summary>
@@ -26,15 +29,19 @@ namespace GameHero.Models
         /// </summary>
         public WeaponTypes WeaponTypes { get; set; } = WeaponTypes.Hand; 
 
-
+        /// <summary>
+        /// Модель героя по-умолчанию
+        /// </summary>
         public HeroModel() 
         {
             Weapons.Add(WeaponTypes.Hand, new HandWeapon());
             Weapons.Add(WeaponTypes.Pistol, new PistolWeapon());
-            
-
         }
 
+        /// <summary>
+        /// Метод полуения списка оружия героя
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<WeaponTypes, IWeapon> GetWeaponsList() 
         {
             return Weapons;
@@ -53,18 +60,27 @@ namespace GameHero.Models
             Weapons.Add(weaponTypes, WeaponManager.GetWeapon(weaponTypes)); //Ошибка null из GetWeapon
         }
 
+        /// <summary>
+        /// Назначение оружия по-умолчанию
+        /// </summary>
+        /// <param name="weaponTypes"></param>
         public void ChangeWeapon(WeaponTypes weaponTypes) 
         {
             WeaponTypes = weaponTypes;
 
         }
-
+        /// <summary>
+        /// Получение информации о текущем оружии
+        /// </summary>
+        /// <returns></returns>
         public IWeapon GetCurrentWeapon() 
         {
             return currentWeapon = Weapons[WeaponTypes];
         }
 
-
+        /// <summary>
+        /// Атака текущим оружием
+        /// </summary>
         public void Attack()
         {
             if (!Weapons.ContainsKey(WeaponTypes)) 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameHeroDAL.Inrefaces
+namespace GameHero.DAL.Models
 {
-    internal interface IConnection
+    internal class HeroModel
     {
     }
 }

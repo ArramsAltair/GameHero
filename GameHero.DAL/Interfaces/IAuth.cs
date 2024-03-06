@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameHeroDAL.Inrefaces
+namespace GameHero.DAL.Inrefaces
 {
-    internal interface IModels
+    internal interface IAuth
     {
-
-        string Login { get; set; }
+        string Username { get; set; }
 
         string Password { get; set; }
+
     }
 }
