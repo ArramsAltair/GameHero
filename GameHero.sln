@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHero", "GameHero\GameHero.csproj", "{08A3A321-A219-4364-B8C5-F3288FC133E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameHero", "GameHero\GameHero.csproj", "{08A3A321-A219-4364-B8C5-F3288FC133E7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameHero.DAL", "GameHero.DAL\GameHero.DAL.csproj", "{20FBBB38-5C7E-4325-8072-7683AD9FB412}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameHero.Logic", "GameHero.Logic\GameHero.Logic.csproj", "{BBE37A55-CBC1-46FE-81CB-B4ECE61DEB46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{08A3A321-A219-4364-B8C5-F3288FC133E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08A3A321-A219-4364-B8C5-F3288FC133E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08A3A321-A219-4364-B8C5-F3288FC133E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20FBBB38-5C7E-4325-8072-7683AD9FB412}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20FBBB38-5C7E-4325-8072-7683AD9FB412}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20FBBB38-5C7E-4325-8072-7683AD9FB412}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20FBBB38-5C7E-4325-8072-7683AD9FB412}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBE37A55-CBC1-46FE-81CB-B4ECE61DEB46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBE37A55-CBC1-46FE-81CB-B4ECE61DEB46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBE37A55-CBC1-46FE-81CB-B4ECE61DEB46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBE37A55-CBC1-46FE-81CB-B4ECE61DEB46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

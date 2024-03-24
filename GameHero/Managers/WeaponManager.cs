@@ -13,10 +13,6 @@ namespace GameHero.Managers
     {
         HandWeapon hand;
         PistolWeapon pistol;
-        public WeaponManager()
-        {
-            
-        }
 
         public static IWeapon GetWeapon(WeaponTypes weaponTypes) 
         {
