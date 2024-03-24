@@ -1,4 +1,5 @@
-﻿using GameHero.Interfaces;
+﻿using GameHero.Enums;
+using GameHero.Interfaces;
 
 namespace GameHero.Weapons
 {
@@ -7,7 +8,11 @@ namespace GameHero.Weapons
 
         public override string Name { get; set; } = "Пистолет";
 
+        public WeaponTypes WeaponType { get; set; } = WeaponTypes.Pistol;
+
         public override int MagazineCapacity { get; set; } = 10;
+
+        public AttackTypes AttackType { get; set; } = AttackTypes.Range;
 
         public override double FireSpeed { get; set; } = 1;
 

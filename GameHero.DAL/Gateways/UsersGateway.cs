@@ -15,37 +15,17 @@ namespace GameHero.DAL
 {
     public class UsersGateway : IDisposable
     {
-        private bool _disposed;
-        private SqlConnection _sqlConnection;
+
+        #region private
 
         /// <summary>
-        /// Метод подключения к бд
+        /// Константа подключения к бд
         /// </summary>
-        /// <returns></returns>
-        public bool Connection()
-        {
-            if (_sqlConnection?.State == System.Data.ConnectionState.Open)
-            {
-                return true;
-            }
+        private const string _connectionString = "Data Source=ARRAMSNB\\MSSQLSERVER04; Integrated Security=SSPI; Initial Catalog=HeroesGame;";
 
-            _sqlConnection = new SqlConnection();
-            _sqlConnection.ConnectionString = "Data Source=ARRAMSNB\\MSSQLSERVER04; Integrated Security=SSPI; Initial Catalog=HeroesGame;";
+        private bool _disposed;
 
-            try
-            {
-                _sqlConnection.Open();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Invalid connection!");
-                return false;
-            }
-
-            //Console.WriteLine("Соединение с базой успешно");
-        }
+        #endregion
 
         private void Dispose(bool disposed)
         {
@@ -56,7 +36,6 @@ namespace GameHero.DAL
 
             _disposed = disposed;
 
-            _sqlConnection?.Dispose();
         }
 
         public void Dispose()
@@ -64,31 +43,6 @@ namespace GameHero.DAL
             Dispose(true);
         }
 
-        /// <summary>
-        /// Метод получения и вывод всех пользователей из бд
-        /// </summary>
-        public void GetUsers()
-        {
-            if (!Connection())
-            {
-                return;
-            }
-
-            using (SqlCommand cmd = _sqlConnection.CreateCommand())
-            {
-                cmd.ExecuteReader();
-                cmd.CommandText = "SELECT * FROM Users";
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Console.WriteLine(string.Format("{0} \t | {1} \t | {2} \t | {3}", reader[0], reader[1], reader[2], reader[3]));
-                    }
-                }
-            }
-
-        }
 
         /// <summary>
         /// Метод проверки авторизируемого пользователя на существование в базе
@@ -98,29 +52,36 @@ namespace GameHero.DAL
         /// <returns></returns>
         public bool IsAuth(string username, string password)
         {
-            if (!Connection())
+            using (SqlConnection _sqlConnection = new SqlConnection(_connectionString)) 
             {
-                return false;
-            }
-
-            using (SqlCommand cmd = _sqlConnection.CreateCommand())
-            {
-                cmd.CommandText = "SELECT * FROM Users WHERE Username = @username AND Password = @password";
-                cmd.Parameters.AddWithValue("username", username);
-                cmd.Parameters.AddWithValue("password", password);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                using (SqlCommand cmd = _sqlConnection.CreateCommand())
                 {
-                    if (reader.HasRows)
+                    cmd.CommandText = "SELECT [Username],[Password] FROM Users WHERE Username = @username AND Password = @password";
+                    cmd.Parameters.AddWithValue("username", username);
+                    cmd.Parameters.AddWithValue("password", password);
+
+                    try 
                     {
-                        return true;
+                        cmd.Connection.Open();
                     }
-                    else
+                    catch 
                     {
                         return false;
                     }
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+
                 }
-            }
+            }            
         }
 
         /// <summary>
@@ -128,83 +89,97 @@ namespace GameHero.DAL
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        private UserInfo GetUser(string username) 
+        public UserInfo GetUser(string username) 
         {
-            UserInfo result = new ();
 
-            using (SqlCommand cmdUsers = _sqlConnection.CreateCommand())
+            using (SqlConnection _sqlConnection = new SqlConnection(_connectionString))
             {
-                cmdUsers.CommandText = "SELECT [Id],[Username],[RoleId] FROM Users WHERE Username = @username";
-                cmdUsers.Parameters.AddWithValue("username", username);
+                UserInfo result = new();
 
-                using (SqlDataReader readerUsers = cmdUsers.ExecuteReader())
+                using (SqlCommand cmd = _sqlConnection.CreateCommand())
                 {
-                    if (!readerUsers.HasRows)
+                    cmd.CommandText = "SELECT [UserId],[UserName],[RoleId] FROM Users WHERE Username = @username";
+                    cmd.Parameters.AddWithValue("username", username);
+
+                    try
                     {
+                        cmd.Connection.Open();
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+
+                    using (SqlDataReader readerUsers = cmd.ExecuteReader())
+                    {
+                        if (!readerUsers.HasRows)
+                        {
+                            return null;
+                        }
+
+                        while (readerUsers.Read())
+                        {
+                            result.UserId = (int)readerUsers[0];
+                            result.UserName = readerUsers[1]?.ToString() ?? "";
+                            result.UserRole = readerUsers[2]?.ToString() ?? "";
+                        }
+                        readerUsers.Close();
                         return result;
                     }
-
-                    while (readerUsers.Read())
-                    {
-                        result.UserId   = (int)readerUsers[0];
-                        result.UserName = readerUsers[1]?.ToString() ?? "";
-                        result.UserRole = readerUsers[2]?.ToString() ?? "";
-                    }
-                    readerUsers.Close();
                 }
             }
-            return result; 
         }
 
-        private int GetUserHeroId(int userId) 
-        {   
-            int userHeroId = -1;
-            using (SqlCommand cmd = _sqlConnection.CreateCommand())
-            {
-                cmd.CommandText = "SELECT * FROM UserHeroes WHERE User = @userid";
-                cmd.Parameters.AddWithValue("userid", userId);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    if (!reader.HasRows)
-                    {
-                        return -1;
-                    }
-                    while (reader.Read())
-                    {
-                        userHeroId = (int)reader[2];
-                    }
-                    reader.Close();
-                }
-            }
-            return userHeroId;
-        }
-
-        /// <summary>
-        /// method
-        /// </summary>
-        /// <param name="username"></param>
-        /// <returns></returns>
-        public IUserInfo GetUserByUserName(string username)
+        public UserInfo GetUserInfo(UserInfo userInfo) 
         {
-            if (username == null)
+            if(userInfo is null) 
             {
                 return null;
             }
-            if (!Connection())
+            using (SqlConnection _sqlConnection = new SqlConnection(_connectionString))
             {
-                return null;
+                using (SqlCommand cmd = _sqlConnection.CreateCommand())
+                {
+                    //Перенести в HeroManager
+                    cmd.CommandText = @"SELECT   h.[HeroId]
+		                                    ,h.[HeroName]
+		                                    ,h.[HeroType]
+		                                    ,h.[HeroHP]
+		                                    ,h.[HeroLevel]
+		                                    ,h.[CurrentWeapon]
+		                                    ,h.[CurrentArmor]
+		                                    ,h.[HeroScore]
+                                    FROM  [dbo].[Users] u
+		                            JOIN [dbo].[Users.Heroes] uh on uh.[UserId] = u.[UserId]
+		                            JOIN [dbo].[Heroes] h on h.[HeroId] = uh.[HeroId]
+	                                WHERE u.[Username] = @username
+	                                ORDER BY u.[Username]";
+                    cmd.Parameters.AddWithValue("username", userInfo.UserName);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.HasRows)
+                        {
+                            return null;
+                        }
+                        while (reader.Read())
+                        {
+                            HeroModel model = new();
+                            model.HeroId = reader.GetInt32(0);
+                            model.HeroName = reader.GetString(1);
+                            model.HeroType = reader.GetString(2);
+                            model.HP = reader.GetDouble(3);
+                            model.HeroLevel = reader.GetInt32(4);
+                            model.CurrentWeapon = reader.GetString(5);
+                            model.CurrentArmor = reader.GetString(6);
+                            model.HeroScore = reader.GetInt32(7);
+                            userInfo.heroesList.Add(model);
+                        }
+                        reader.Close();
+                        return userInfo;
+                    }
+                }
             }
-            
-            UserInfo userInfo = GetUser(username);
-
-            if (userInfo.UserId == -1) 
-            {
-                return null;
-            }
-            userInfo.HeroId = GetUserHeroId(userInfo.UserId);
-
-            return userInfo;
+              
         }
     }
 }

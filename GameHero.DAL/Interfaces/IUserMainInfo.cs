@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace GameHero.DAL.Inrefaces
 {
-    public interface IUserInfo
+    public interface IUserMainInfo
     {
         int UserId { get; set; }
 
         string UserName { get; set; }
 
         string UserRole { get; set; }
-
-        int HeroId { get; set; }
 
     }
 }

@@ -12,68 +12,109 @@ using System.Text;
 using System.Threading.Tasks;
 using GameHero.Logic.Managers;
 using GameHero.DAL.Inrefaces;
+using System.Reflection.PortableExecutable;
+using GameHero.DAL.Models;
+using GameHero.DAL.Interfaces;
 
 namespace GameHero.Managers
 {
     internal class GameManager
     {
-        private HeroModel hero;
-        private Dictionary<WeaponTypes, IWeapon> Weapons;
+        private Models.HeroModel _hero;
+
+        private Dictionary<WeaponTypes, IWeapon> _weapons;
+
+        private UserInfo _userInfo;
 
         public GameManager()
         {            
         }
 
-        public void Start()        
+        /// <summary>
+        /// Реализация метода running
+        /// </summary>
+        public void Running()        
         {
-            var userInfo = new UsersManager().UserAuth();
-            if (userInfo is null)
+            _userInfo = new UsersManager().UserAuth();
+            if (_userInfo is null)
             {
                 return;
             }
 
-            Console.WriteLine("Добро пожаловать в игру ГЕРОИ, "+ userInfo.UserName + "!");
+            Console.WriteLine("Добро пожаловать в игру ГЕРОИ, " + _userInfo.UserName + "!");
 
-            //WeaponManager weaponManager = new WeaponManager();
-
-            hero = new HeroModel();
-            Weapons = hero.GetWeaponsList();
-
-            NewGame();
-            Running();
+            Load();           
+            Game();
             GameOver();
         }
 
         /// <summary>
-        /// Метод приведение параметров героя к состоянию новой игры
+        /// Реализация метода загрузки параметров героя
         /// </summary>
-        public void NewGame() 
+        public void Load() 
         {
-            if (hero != null) 
+            
+            if (_hero == null) 
             {
-                hero.HP = 100;
+                _hero = new Models.HeroModel();
+
+                _userInfo = new UsersManager().UserHeroes(_userInfo);
+
+                if (_userInfo.heroesList.Count == 0)
+                {
+                    new HeroesManager().NewHero(_hero);
+                }
             }
+
+            _weapons = _hero.GetWeaponsList();
+            
+            _hero = (Models.HeroModel)new HeroesManager().LoadHero(_hero, _userInfo.CurrentHero);
+            
         }        
 
-        private void Running() 
+
+        /// <summary>
+        /// Реализация метода основного процесса игры
+        /// </summary>
+        private void Game() 
         {
-            void Head()
-            {
-                Console.WriteLine("Очки здоровья: " + hero.HP + "\n");
-                Console.WriteLine("Оружие в рюкзаке:");
-                foreach (var weapons in Weapons)
-                {
-                    Console.WriteLine(weapons.Value.Name + " патроны: "+ weapons.Value.MagazineCapacity);
-                }
-                Console.WriteLine("Выбранное оружие: " + hero.GetCurrentWeapon().Name + "\n");
-                Console.WriteLine(hero.GetCurrentWeapon().Image);
-                Console.WriteLine("------------------------------------------");
-            }
+            #region fields
+
             string line = "";
-            string mainMenu ="Меню \n" +
+            string mainMenu = $"Меню \n" +
                             "1. Введите 'weapons' для выбора оружия \n" +
                             "2. Введите 'attack' для атаки оружием \n" +
                             "3. Введите 'exit' для выхода \n";
+
+            #endregion fields
+
+            #region local methods
+
+            void Head()
+            {
+                string subSpace = $"__________________________";
+
+                Console.WriteLine($"Герой:          {_hero.HeroName}    ");
+                Console.WriteLine($"Уровень:        {_hero.HeroLevel}   ");
+                Console.WriteLine($"Очки здоровья:  {_hero.HP}          ");
+                Console.WriteLine(subSpace);
+                Console.WriteLine("Оружие в рюкзаке:");
+                foreach (var weapons in _weapons)
+                {
+                    Console.WriteLine($"{weapons.Value.Name}");
+                    
+                }
+                Console.WriteLine(subSpace);
+                Console.WriteLine("Выбранное оружие: " + _hero.GetCurrentWeapon().Name);
+
+                if (_hero.GetCurrentWeapon().AttackType == AttackTypes.Range)
+                {
+                    Console.WriteLine($"Патроны: {_hero.GetCurrentWeapon().MagazineCapacity}\n");
+                }
+
+                Console.WriteLine(_hero.GetCurrentWeapon().Image);
+                Console.WriteLine(subSpace);
+            }
 
             void WeaponMenu()
             {
@@ -91,11 +132,11 @@ namespace GameHero.Managers
 
                     if (weaponLine == "hand")
                     {
-                        hero.ChangeWeapon(WeaponTypes.Hand);
+                        _hero.ChangeWeapon(WeaponTypes.Hand);
                     }
                     if (weaponLine == "pistol")
                     {
-                        hero.ChangeWeapon(WeaponTypes.Pistol);
+                        _hero.ChangeWeapon(WeaponTypes.Pistol);
                     }
                     weaponLine = "back";
                 }
@@ -104,13 +145,29 @@ namespace GameHero.Managers
 
             void Attack()
             {
-                if(hero != null) 
-                {
-                    hero.Attack();
-                    Thread.Sleep(1000);
-                }
+ 
+                _hero.Attack();
+                _hero.HP += 5;
+                Thread.Sleep(1000);
+                
                
             }
+
+            void ChangeHero()
+            {
+                Console.Clear();
+                Console.WriteLine("Желаете выбрать другого героя? y/n");
+
+                if (Console.ReadLine() == "y")
+                {
+                    Save();
+                    _userInfo = new UsersManager().UserHeroes(_userInfo);
+                    this.Load();
+                    this.Game();
+                }
+            }
+
+            #endregion local methods
 
             do
             {
@@ -130,16 +187,46 @@ namespace GameHero.Managers
                         break;
                 }
                 Console.Clear();
-
             }
             while (line != "exit");
+
+            ChangeHero();
         }
-        private void GameOver() 
+
+        /// <summary>
+        /// Реализация метода вызова диалога окончания игры
+        /// </summary>
+        private void GameOver()
         {
-
-
+            Save();
+            Console.Clear();
             Console.WriteLine("До свидания, спасибо за игру!");
             Thread.Sleep(1000);
+        }
+
+        /// <summary>
+        /// Реализация метода вызова диалога сохранения данных игрока
+        /// </summary>
+        private void Save() 
+        {
+            Console.Clear();
+            Console.WriteLine("Желаете сохранить данные? y/n");
+            if (Console.ReadLine() == "y")
+            {
+                while (!new HeroesManager().SaveHero(_hero)) 
+                {
+                    Console.Clear();
+                    Console.WriteLine("Не удалось сохранить данные, повторить? y/n");
+                    if (Console.ReadLine() != "y")
+                    {
+                        Thread.Sleep(1000);
+                        return;
+                    }
+                }
+                Console.WriteLine("Данные сохранены!");
+                Thread.Sleep(1000);
+            }
+            
         }
     }
 }

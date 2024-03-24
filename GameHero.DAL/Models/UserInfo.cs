@@ -1,4 +1,5 @@
 ﻿using GameHero.DAL.Inrefaces;
+using GameHero.DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GameHero.DAL.Models
 {
-    internal class UserInfo : IUserInfo
+    public class UserInfo 
     {
         public int UserId { get; set; }
 
@@ -15,7 +16,14 @@ namespace GameHero.DAL.Models
 
         public string UserRole { get; set; }
 
-        public int HeroId { get; set; }        
+        public IHeroModel CurrentHero { get; set; }
+
+        public List<HeroModel> heroesList { get; set; }
+
+        public UserInfo()
+        {
+            heroesList = new List<HeroModel>();
+        }
 
     }
 }

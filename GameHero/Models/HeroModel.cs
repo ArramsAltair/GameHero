@@ -1,4 +1,5 @@
-﻿using GameHero.Enums;
+﻿using GameHero.DAL.Interfaces;
+using GameHero.Enums;
 using GameHero.Interfaces;
 using GameHero.Managers;
 using GameHero.Weapons;
@@ -11,15 +12,25 @@ using System.Threading.Tasks;
 
 namespace GameHero.Models
 {
-    internal class HeroModel : IUnit
+    internal class HeroModel : IUnit, IHeroModel
     {
+        public int HeroId { get; set; }
+
+        public string HeroName { get; set; }
+
+        public string HeroType { get; set; }
+
+        public int HeroLevel { get; set; }
+
         public double HP { get; set; }
 
-        IWeapon currentWeapon { get; set; }
+        IWeapon _currentWeapon { get; set; }
+
+        public string CurrentWeapon { get; set; }
 
         public int CountWeapons{ get; set; }
 
-        public double Score { get; set; }
+        public int HeroScore { get; set; }
 
 
         Dictionary<WeaponTypes, IWeapon> Weapons = new Dictionary<WeaponTypes, IWeapon>();
@@ -27,7 +38,8 @@ namespace GameHero.Models
         /// <summary>
         /// Свойство выборо текущего оружия
         /// </summary>
-        public WeaponTypes WeaponTypes { get; set; } = WeaponTypes.Hand; 
+        public WeaponTypes DeffaultWeaponType { get; set; } = WeaponTypes.Hand;
+
 
         /// <summary>
         /// Модель героя по-умолчанию
@@ -66,7 +78,8 @@ namespace GameHero.Models
         /// <param name="weaponTypes"></param>
         public void ChangeWeapon(WeaponTypes weaponTypes) 
         {
-            WeaponTypes = weaponTypes;
+            CurrentWeapon = weaponTypes.ToString();
+            DeffaultWeaponType = weaponTypes;
 
         }
         /// <summary>
@@ -75,7 +88,7 @@ namespace GameHero.Models
         /// <returns></returns>
         public IWeapon GetCurrentWeapon() 
         {
-            return currentWeapon = Weapons[WeaponTypes];
+            return _currentWeapon = Weapons[DeffaultWeaponType];
         }
 
         /// <summary>
@@ -83,13 +96,13 @@ namespace GameHero.Models
         /// </summary>
         public void Attack()
         {
-            if (!Weapons.ContainsKey(WeaponTypes)) 
+            if (!Weapons.ContainsKey(DeffaultWeaponType)) 
             {
                 Console.WriteLine("Неизвестное оружие");
                 return;
             }
             
-            Weapons[WeaponTypes]?.Attack();
+            Weapons[DeffaultWeaponType]?.Attack();
         }
     }
 }

@@ -4,5 +4,5 @@ using GameHero.Models;
 
 GameManager gameManager = new GameManager();
 
-gameManager.Start();
+gameManager.Running();
 

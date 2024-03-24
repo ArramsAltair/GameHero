@@ -1,4 +1,5 @@
-﻿using GameHero.Interfaces;
+﻿using GameHero.Enums;
+using GameHero.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,14 @@ namespace GameHero.Weapons
 {
     internal class HandWeapon : Weapon, IFabric, IWeapon
     {
-        public HandWeapon()
-        {
 
-        }
         public override string Name { get; set; } = "Рука";
 
+        public WeaponTypes WeaponType { get; set; } = WeaponTypes.Hand;
+
         public override int MagazineCapacity { get; set; } = 1;
+
+        public AttackTypes AttackType { get; set; } = AttackTypes.Melee;
 
         public override double FireSpeed { get; set; } = 1;
 

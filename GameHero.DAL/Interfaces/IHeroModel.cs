@@ -12,11 +12,13 @@ namespace GameHero.DAL.Interfaces
 
         string HeroName { get; set; }
 
+        string HeroType { get; set; }
+
+        double HP { get; set; }
+
         int HeroLevel { get; set; }
 
-        int HeroType { get; set; }
-        
-        int HP { get; set; }
+        int HeroScore { get; set; }
 
         string CurrentWeapon {get; set; }
     }
